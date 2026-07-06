@@ -17,7 +17,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { BrandMark } from '@/components/ui/brand-mark';
 import { AppButton } from '@/components/ui/button';
-import { SocialLoginRow } from '@/components/ui/social-row';
 import { AppTextField } from '@/components/ui/text-field';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 
@@ -120,7 +119,6 @@ export function LoginScreen() {
                   Don&apos;t have an account? <Text style={styles.linkAccent}>Sign Up</Text>
                 </Text>
               </Pressable>
-              <SocialLoginRow />
             </Animated.View>
           </ScrollView>
         </KeyboardAvoidingView>

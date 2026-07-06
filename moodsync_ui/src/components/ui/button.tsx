@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ActivityIndicator, Pressable, StyleSheet, type PressableProps } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View, type PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
@@ -30,6 +30,11 @@ export function AppButton({ label, variant = 'primary', loading = false, ...rest
   }
 
   const isDisabled = loading || Boolean(rest.disabled);
+  const content = loading ? (
+    <ActivityIndicator color="#FFFFFF" />
+  ) : (
+    <ThemedText style={styles.label}>{label}</ThemedText>
+  );
 
   return (
     <AnimatedPressable
@@ -39,44 +44,64 @@ export function AppButton({ label, variant = 'primary', loading = false, ...rest
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[styles.pill, animatedStyle]}>
-      {variant === 'primary' ? (
-        <LinearGradient
-          colors={BrandGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.pillFill}>
-          {loading ? <ActivityIndicator color="#FFFFFF" /> : <ThemedText style={styles.label}>{label}</ThemedText>}
-        </LinearGradient>
-      ) : loading ? (
-        <ActivityIndicator color="#FFFFFF" style={styles.secondaryLabel} />
-      ) : (
-        <ThemedText style={[styles.label, styles.secondaryLabel]}>{label}</ThemedText>
-      )}
+      style={[
+        styles.pressable,
+        variant === 'primary' && styles.primaryShadow,
+        animatedStyle,
+        isDisabled && styles.disabled,
+      ]}>
+      <View style={styles.clip}>
+        {variant === 'primary' ? (
+          <LinearGradient
+            colors={BrandGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.pillFill}>
+            {content}
+          </LinearGradient>
+        ) : (
+          <View style={[styles.pillFill, styles.secondaryFill]}>{content}</View>
+        )}
+      </View>
     </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
-  pill: {
+  pressable: {
+    alignSelf: 'stretch',
+    borderRadius: 999,
+  },
+  primaryShadow: {
+    shadowColor: '#8B5CF6',
+    shadowOpacity: 0.55,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+  clip: {
     borderRadius: 999,
     overflow: 'hidden',
   },
   pillFill: {
-    paddingVertical: Spacing.three,
+    paddingVertical: Spacing.three + Spacing.half,
+    paddingHorizontal: Spacing.five,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  secondaryFill: {
+    borderRadius: 999,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: 'rgba(255,255,255,0.07)',
   },
   label: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
-  },
-  secondaryLabel: {
-    paddingVertical: Spacing.three,
-    textAlign: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.35)',
-    borderRadius: 999,
+    letterSpacing: 0.3,
   },
 });

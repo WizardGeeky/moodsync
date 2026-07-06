@@ -17,15 +17,16 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { BrandMark } from '@/components/ui/brand-mark';
 import { AppButton } from '@/components/ui/button';
-import { SocialLoginRow } from '@/components/ui/social-row';
 import { AppTextField } from '@/components/ui/text-field';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_DIGITS_PATTERN = /^\d{7,15}$/;
+const HANDLE_PATTERN = /^[a-zA-Z0-9_]{3,20}$/;
 
 type FormErrors = {
   fullName?: string;
+  handle?: string;
   email?: string;
   phone?: string;
 };
@@ -33,6 +34,7 @@ type FormErrors = {
 export function SignupScreen() {
   const router = useRouter();
   const [fullName, setFullName] = useState('');
+  const [handle, setHandle] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
@@ -42,6 +44,9 @@ export function SignupScreen() {
     const nextErrors: FormErrors = {};
     if (fullName.trim().length < 2) {
       nextErrors.fullName = 'Enter your full name';
+    }
+    if (!HANDLE_PATTERN.test(handle.trim())) {
+      nextErrors.handle = '3-20 letters, numbers, or underscores';
     }
     if (!EMAIL_PATTERN.test(email.trim())) {
       nextErrors.email = 'Enter a valid email address';
@@ -99,6 +104,16 @@ export function SignupScreen() {
                 placeholder="Jordan Rivera"
               />
               <AppTextField
+                label="Handle"
+                icon="at-outline"
+                value={handle}
+                onChangeText={setHandle}
+                error={errors.handle}
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder="jordanrivera"
+              />
+              <AppTextField
                 label="Email"
                 icon="mail-outline"
                 value={email}
@@ -133,7 +148,6 @@ export function SignupScreen() {
                   Already have an account? <Text style={styles.linkAccent}>Log In</Text>
                 </Text>
               </Pressable>
-              <SocialLoginRow />
             </Animated.View>
           </ScrollView>
         </KeyboardAvoidingView>

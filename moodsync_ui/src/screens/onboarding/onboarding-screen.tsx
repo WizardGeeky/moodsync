@@ -27,25 +27,25 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SLIDES: StorySlideData[] = [
   {
-    icon: 'pulse-outline',
+    scene: 'mood',
     title: 'Track Your Mood',
     description: 'Check in daily and watch your emotional patterns come to life.',
     gradient: ['#1D4ED8', '#0B1740'],
-    emojis: ['😊', '😢', '😍'],
+    emojis: ['📊', '💭'],
   },
   {
-    icon: 'images-outline',
+    scene: 'moments',
     title: 'Share Moments',
     description: 'Capture the little things and share them with people who matter.',
     gradient: ['#7C3AED', '#2E1065'],
-    emojis: ['📸', '💬', '✨'],
+    emojis: ['📸', '✨'],
   },
   {
-    icon: 'heart-outline',
+    scene: 'hearts',
     title: 'Connect Hearts',
     description: 'Sync moods in real time and feel closer, no matter the distance.',
     gradient: ['#DB2777', '#4C0519'],
-    emojis: ['❤️', '💞', '🔥'],
+    emojis: ['💞', '🔥'],
   },
 ];
 

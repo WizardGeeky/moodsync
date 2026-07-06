@@ -1,6 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ComponentProps } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -12,24 +10,25 @@ import Animated, {
 import { AuroraBackgroundColor } from '@/constants/brand';
 import { Spacing } from '@/constants/theme';
 
+import { ConnectionScene } from './connection-scene';
 import { FloatingEmoji } from './floating-emoji';
+import { MoodSwingScene } from './mood-swing-scene';
+import { PostMomentScene } from './post-moment-scene';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.5;
-const BADGE_SIZE = 96;
 
 const EMOJI_POSITIONS: { top: `${number}%`; left: `${number}%` }[] = [
-  { top: '14%', left: '12%' },
+  { top: '12%', left: '12%' },
   { top: '10%', left: '68%' },
-  { top: '54%', left: '76%' },
 ];
 
 export type StorySlideData = {
-  icon: ComponentProps<typeof Ionicons>['name'];
+  scene: 'mood' | 'moments' | 'hearts';
   title: string;
   description: string;
   gradient: readonly [string, string];
-  emojis: readonly [string, string, string];
+  emojis: readonly [string, string];
 };
 
 type StorySlideProps = StorySlideData & {
@@ -38,7 +37,7 @@ type StorySlideProps = StorySlideData & {
 };
 
 export function StorySlide({
-  icon,
+  scene,
   title,
   description,
   gradient,
@@ -52,7 +51,7 @@ export function StorySlide({
     (index + 1) * SCREEN_WIDTH,
   ];
 
-  const badgeStyle = useAnimatedStyle(() => ({
+  const sceneStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollX.value, inputRange, [0.4, 1, 0.4], Extrapolation.CLAMP),
     transform: [
       { scale: interpolate(scrollX.value, inputRange, [0.75, 1, 0.75], Extrapolation.CLAMP) },
@@ -84,8 +83,10 @@ export function StorySlide({
             delay={emojiIndex * 180}
           />
         ))}
-        <Animated.View style={[styles.badge, badgeStyle]}>
-          <Ionicons name={icon} size={BADGE_SIZE * 0.42} color="#FFFFFF" />
+        <Animated.View style={sceneStyle}>
+          {scene === 'mood' && <MoodSwingScene />}
+          {scene === 'moments' && <PostMomentScene emoji={emojis[0]} />}
+          {scene === 'hearts' && <ConnectionScene />}
         </Animated.View>
         <LinearGradient colors={['transparent', AuroraBackgroundColor]} style={styles.heroFade} />
       </View>
@@ -110,16 +111,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: HERO_HEIGHT * 0.55,
-  },
-  badge: {
-    width: BADGE_SIZE,
-    height: BADGE_SIZE,
-    borderRadius: BADGE_SIZE / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.35)',
   },
   textBlock: {
     paddingHorizontal: Spacing.five,
