@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
+  runOnUI,
   scrollTo,
   useAnimatedRef,
   useAnimatedScrollHandler,
@@ -14,8 +15,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { AuroraBackground } from '@/components/ui/aurora-background';
-import { BrandGradient } from '@/constants/brand';
+import { AuroraBackgroundColor, BrandGradient } from '@/constants/brand';
 import { Spacing } from '@/constants/theme';
 
 import { StoryDots } from './components/story-dots';
@@ -103,14 +103,13 @@ export function OnboardingScreen() {
       return;
     }
     const nextIndex = activeIndex + 1;
-    scrollTo(scrollRef, nextIndex * SCREEN_WIDTH, 0, true);
+    runOnUI(scrollTo)(scrollRef, nextIndex * SCREEN_WIDTH, 0, true);
     setActiveIndex(nextIndex);
   }
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <AuroraBackground />
       <SafeAreaView style={styles.safeArea}>
         <Animated.ScrollView
           ref={scrollRef}
@@ -147,6 +146,7 @@ export function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: AuroraBackgroundColor,
   },
   safeArea: {
     flex: 1,

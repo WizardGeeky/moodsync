@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: HERO_HEIGHT * 0.4,
+    height: HERO_HEIGHT * 0.55,
   },
   badge: {
     width: BADGE_SIZE,
