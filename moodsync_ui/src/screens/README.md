@@ -27,6 +27,6 @@ finding a screen's code never requires knowing the routing tree.
 1. Create `screens/<name>/<name>-screen.tsx` exporting a named `<Name>Screen` component.
 2. Put anything only that screen needs — local components, hooks, styles — inside
    `screens/<name>/`.
-3. Add a route file under `src/app/` (or `src/app/(tabs)/` for a tab) that re-exports it.
+3. Add a route file under `src/app/` that re-exports it.
 4. If a component or hook ends up used by two or more screens, move it up to
    `src/components/` or `src/hooks/` instead of duplicating it.

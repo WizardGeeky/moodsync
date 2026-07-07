@@ -9,12 +9,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import {
-  AuroraBackgroundColor,
-  AuroraBlobs,
-  AuroraBlobsCompact,
-  type AuroraBlobConfig,
-} from '@/constants/brand';
+import type { AuroraBlobConfig } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
 
 function AuroraBlob({
   blob,
@@ -83,12 +79,13 @@ function AuroraBlob({
 export type AuroraBackgroundVariant = 'hero' | 'form';
 
 export function AuroraBackground({ variant = 'hero' }: { variant?: AuroraBackgroundVariant }) {
-  const blobs = variant === 'form' ? AuroraBlobsCompact : AuroraBlobs;
+  const { theme } = useAppTheme();
+  const blobs = variant === 'form' ? theme.blobsCompact : theme.blobs;
   const dim = variant === 'form';
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: AuroraBackgroundColor }]} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.background }]} />
       {blobs.map((blob, index) => (
         <AuroraBlob key={index} blob={blob} index={index} dim={dim} />
       ))}

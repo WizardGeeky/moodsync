@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -12,11 +12,12 @@ import Animated, {
   ZoomIn,
 } from 'react-native-reanimated';
 
-import { BrandGradient } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
 
 const DEFAULT_SIZE = 92;
 
 export function BrandMark({ size = DEFAULT_SIZE }: { size?: number }) {
+  const { theme } = useAppTheme();
   const beat = useSharedValue(1);
   const spin = useSharedValue(0);
 
@@ -48,18 +49,24 @@ export function BrandMark({ size = DEFAULT_SIZE }: { size?: number }) {
     <Animated.View
       entering={ZoomIn.duration(700).springify().damping(12)}
       style={[styles.wrapper, { width: size, height: size }]}>
-      <LinearGradient
-        colors={BrandGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.badge, { width: size, height: size, borderRadius: size / 2 }]}>
-        <Animated.View style={[styles.syncRing, spinStyle]}>
-          <Ionicons name="sync" size={size * 0.78} color="rgba(255,255,255,0.85)" />
-        </Animated.View>
-        <Animated.View style={beatStyle}>
-          <Ionicons name="heart" size={size * 0.3} color="#FFFFFF" />
-        </Animated.View>
-      </LinearGradient>
+      <View
+        style={[
+          styles.shadowLayer,
+          { width: size, height: size, borderRadius: size / 2, shadowColor: theme.gradient[1] },
+        ]}>
+        <LinearGradient
+          colors={theme.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.badge, { width: size, height: size, borderRadius: size / 2 }]}>
+          <Animated.View style={[styles.syncRing, spinStyle]}>
+            <Ionicons name="sync" size={size * 0.78} color="rgba(255,255,255,0.85)" />
+          </Animated.View>
+          <Animated.View style={beatStyle}>
+            <Ionicons name="heart" size={size * 0.3} color="#FFFFFF" />
+          </Animated.View>
+        </LinearGradient>
+      </View>
     </Animated.View>
   );
 }
@@ -69,14 +76,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  badge: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#8B5CF6',
+  shadowLayer: {
     shadowOpacity: 0.5,
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 8 },
     elevation: 10,
+  },
+  badge: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   syncRing: {
     position: 'absolute',

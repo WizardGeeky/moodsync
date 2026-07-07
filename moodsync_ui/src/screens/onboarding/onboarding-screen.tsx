@@ -10,12 +10,11 @@ import Animated, {
   scrollTo,
   useAnimatedRef,
   useAnimatedScrollHandler,
-  useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated';
 
-import { AuroraBackgroundColor, BrandGradient } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
+import { usePressScale } from '@/hooks/use-press-scale';
 import { Spacing } from '@/constants/theme';
 
 import { StoryDots } from './components/story-dots';
@@ -49,30 +48,27 @@ const SLIDES: StorySlideData[] = [
   },
 ];
 
-function CircularNavButton({ isLast, onPress }: { isLast: boolean; onPress: () => void }) {
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  function handlePressIn() {
-    scale.value = withSpring(0.9, { damping: 15, stiffness: 300 });
-  }
-
-  function handlePressOut() {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-  }
+function CircularNavButton({
+  isLast,
+  onPress,
+  gradient,
+}: {
+  isLast: boolean;
+  onPress: () => void;
+  gradient: readonly [string, string, string];
+}) {
+  const { animatedStyle, onPressIn, onPressOut } = usePressScale(0.9);
 
   return (
     <AnimatedPressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       accessibilityRole="button"
       accessibilityLabel={isLast ? 'Get Started' : 'Next'}
       style={[styles.navButton, animatedStyle]}>
       <LinearGradient
-        colors={BrandGradient}
+        colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.navButtonFill}>
@@ -84,6 +80,7 @@ function CircularNavButton({ isLast, onPress }: { isLast: boolean; onPress: () =
 
 export function OnboardingScreen() {
   const router = useRouter();
+  const { theme } = useAppTheme();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollX = useSharedValue(0);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -108,7 +105,7 @@ export function OnboardingScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar style="light" />
       <SafeAreaView style={styles.safeArea}>
         <Animated.ScrollView
@@ -136,7 +133,7 @@ export function OnboardingScreen() {
             )}
           </View>
           <StoryDots count={SLIDES.length} scrollX={scrollX} />
-          <CircularNavButton isLast={isLastSlide} onPress={handlePrimaryPress} />
+          <CircularNavButton isLast={isLastSlide} onPress={handlePrimaryPress} gradient={theme.gradient} />
         </View>
       </SafeAreaView>
     </View>
@@ -146,7 +143,6 @@ export function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: AuroraBackgroundColor,
   },
   safeArea: {
     flex: 1,

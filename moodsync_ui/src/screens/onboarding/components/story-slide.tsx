@@ -7,7 +7,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { AuroraBackgroundColor } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
 import { Spacing } from '@/constants/theme';
 
 import { ConnectionScene } from './connection-scene';
@@ -45,6 +45,7 @@ export function StorySlide({
   index,
   scrollX,
 }: StorySlideProps) {
+  const { theme } = useAppTheme();
   const inputRange = [
     (index - 1) * SCREEN_WIDTH,
     index * SCREEN_WIDTH,
@@ -88,7 +89,7 @@ export function StorySlide({
           {scene === 'moments' && <PostMomentScene emoji={emojis[0]} />}
           {scene === 'hearts' && <ConnectionScene />}
         </Animated.View>
-        <LinearGradient colors={['transparent', AuroraBackgroundColor]} style={styles.heroFade} />
+        <LinearGradient colors={['transparent', theme.background]} style={styles.heroFade} />
       </View>
       <Animated.View style={[styles.textBlock, textStyle]}>
         <Text style={styles.title}>{title}</Text>

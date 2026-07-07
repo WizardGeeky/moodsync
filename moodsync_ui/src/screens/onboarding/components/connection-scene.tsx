@@ -14,7 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { BrandGradient } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
 
 const AVATAR_SIZE = 72;
 const CONNECTOR_WIDTH = 110;
@@ -41,22 +41,22 @@ function PingRing({ delay }: { delay: number }) {
   return <Animated.View style={[styles.ping, ringStyle]} />;
 }
 
-function Avatar({ delay }: { delay: number }) {
+function Avatar({ delay, gradient }: { delay: number; gradient: readonly [string, string, string] }) {
   return (
     <View style={styles.avatarWrapper}>
       <PingRing delay={delay} />
       <LinearGradient
-        colors={BrandGradient}
+        colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.avatar}>
+        style={[styles.avatar, { shadowColor: gradient[1] }]}>
         <Ionicons name="person" size={32} color="#FFFFFF" />
       </LinearGradient>
     </View>
   );
 }
 
-function CenterHeartBadge() {
+function CenterHeartBadge({ gradient }: { gradient: readonly [string, string, string] }) {
   const beat = useSharedValue(1);
 
   useEffect(() => {
@@ -78,9 +78,9 @@ function CenterHeartBadge() {
   }));
 
   return (
-    <Animated.View style={[styles.centerBadge, beatStyle]}>
+    <Animated.View style={[styles.centerBadge, beatStyle, { shadowColor: gradient[1] }]}>
       <LinearGradient
-        colors={BrandGradient}
+        colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.centerBadgeFill}>
@@ -131,18 +131,20 @@ function TravellingHeart({ delay }: { delay: number }) {
 }
 
 export function ConnectionScene() {
+  const { theme } = useAppTheme();
+
   return (
     <View style={styles.row}>
-      <Avatar delay={0} />
+      <Avatar delay={0} gradient={theme.gradient} />
       <View style={styles.connector}>
         <TravellingHeart delay={0} />
         <TravellingHeart delay={730} />
         <TravellingHeart delay={1460} />
         <View style={styles.centerBadgeSlot}>
-          <CenterHeartBadge />
+          <CenterHeartBadge gradient={theme.gradient} />
         </View>
       </View>
-      <Avatar delay={900} />
+      <Avatar delay={900} gradient={theme.gradient} />
     </View>
   );
 }
@@ -164,7 +166,6 @@ const styles = StyleSheet.create({
     borderRadius: AVATAR_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#8B5CF6',
     shadowOpacity: 0.5,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
@@ -201,7 +202,6 @@ const styles = StyleSheet.create({
     width: CENTER_BADGE_SIZE,
     height: CENTER_BADGE_SIZE,
     borderRadius: CENTER_BADGE_SIZE / 2,
-    shadowColor: '#8B5CF6',
     shadowOpacity: 0.6,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },

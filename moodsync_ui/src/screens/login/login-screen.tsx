@@ -48,7 +48,7 @@ export function LoginScreen() {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      router.replace('/(tabs)/home');
+      router.replace('/home');
     }, 900);
   }
 

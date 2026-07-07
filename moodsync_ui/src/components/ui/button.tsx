@@ -1,10 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, Pressable, StyleSheet, View, type PressableProps } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
-import { BrandGradient } from '@/constants/brand';
+import { useAppTheme } from '@/context/theme-context';
 import { Spacing } from '@/constants/theme';
+import { usePressScale } from '@/hooks/use-press-scale';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -15,19 +16,8 @@ export type AppButtonProps = Omit<PressableProps, 'style'> & {
 };
 
 export function AppButton({ label, variant = 'primary', loading = false, ...rest }: AppButtonProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  function handlePressIn() {
-    scale.value = withSpring(0.96, { damping: 15, stiffness: 300 });
-  }
-
-  function handlePressOut() {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-  }
+  const { theme } = useAppTheme();
+  const { animatedStyle, onPressIn, onPressOut } = usePressScale(0.96);
 
   const isDisabled = loading || Boolean(rest.disabled);
   const content = loading ? (
@@ -42,18 +32,18 @@ export function AppButton({ label, variant = 'primary', loading = false, ...rest
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       style={[
         styles.pressable,
-        variant === 'primary' && styles.primaryShadow,
+        variant === 'primary' && [styles.primaryShadow, { shadowColor: theme.gradient[1] }],
         animatedStyle,
         isDisabled && styles.disabled,
       ]}>
       <View style={styles.clip}>
         {variant === 'primary' ? (
           <LinearGradient
-            colors={BrandGradient}
+            colors={theme.gradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.pillFill}>
@@ -73,7 +63,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   primaryShadow: {
-    shadowColor: '#8B5CF6',
     shadowOpacity: 0.55,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },

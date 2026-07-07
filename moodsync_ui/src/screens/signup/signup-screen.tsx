@@ -60,7 +60,7 @@ export function SignupScreen() {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      router.replace('/(tabs)/home');
+      router.replace('/home');
     }, 900);
   }
 
