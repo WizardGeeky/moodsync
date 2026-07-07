@@ -6,9 +6,11 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
+import { GradientAvatar } from '@/components/gradient-avatar';
 import { ScreenGlow } from '@/components/screen-glow';
 import { TopBar } from '@/components/top-bar';
 import { useAppTheme } from '@/context/theme-context';
+import { useProfile } from '@/context/profile-context';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { usePressScale } from '@/hooks/use-press-scale';
 
@@ -19,9 +21,11 @@ type SettingRowData = {
   label: string;
 };
 
-const ACCOUNT_ROWS: SettingRowData[] = [
-  { icon: 'person-outline', label: 'Edit Profile' },
-  { icon: 'lock-closed-outline', label: 'Privacy' },
+const ACCOUNT_ROWS: SettingRowData[] = [{ icon: 'lock-closed-outline', label: 'Privacy' }];
+
+const CONNECT_ROWS: (SettingRowData & { route: '/my-qr' | '/scan-connect' })[] = [
+  { icon: 'qr-code-outline', label: 'My QR Code', route: '/my-qr' },
+  { icon: 'scan-outline', label: 'Scan & Connect', route: '/scan-connect' },
 ];
 
 const SUPPORT_ROWS: SettingRowData[] = [
@@ -43,6 +47,28 @@ function SettingsRow({ icon, label, onPress }: SettingRowData & { onPress?: () =
         <Ionicons name={icon} size={18} color={colors.text} />
       </View>
       <Text style={[styles.rowLabel, { color: colors.text }]}>{label}</Text>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+    </AnimatedPressable>
+  );
+}
+
+function EditProfileRow() {
+  const router = useRouter();
+  const { colors } = useAppTheme();
+  const { profile } = useProfile();
+  const { animatedStyle, onPressIn, onPressOut } = usePressScale(0.98);
+
+  return (
+    <AnimatedPressable
+      onPress={() => router.push('/edit-profile')}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      style={[styles.row, animatedStyle]}>
+      <GradientAvatar uri={profile.avatarUri} ringGradient={profile.ringGradient} size={34} ringWidth={2} />
+      <Text style={[styles.rowLabel, { color: colors.text }]}>Edit Profile</Text>
+      <Text style={[styles.rowValue, { color: colors.textMuted }]} numberOfLines={1}>
+        {profile.fullName || 'Add your name'}
+      </Text>
       <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
     </AnimatedPressable>
   );
@@ -92,6 +118,7 @@ export function SettingsScreen() {
           <Animated.View entering={FadeInDown.duration(450).springify().damping(16)}>
             <SectionTitle>Account</SectionTitle>
             <View style={[styles.card, { backgroundColor: colors.surface }]}>
+              <EditProfileRow />
               {ACCOUNT_ROWS.map((row) => (
                 <SettingsRow key={row.label} {...row} />
               ))}
@@ -102,6 +129,20 @@ export function SettingsScreen() {
             <SectionTitle>Appearance</SectionTitle>
             <View style={[styles.card, { backgroundColor: colors.surface }]}>
               <ThemeRow />
+            </View>
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(120).duration(450).springify().damping(16)}>
+            <SectionTitle>Connect</SectionTitle>
+            <View style={[styles.card, { backgroundColor: colors.surface }]}>
+              {CONNECT_ROWS.map((row) => (
+                <SettingsRow
+                  key={row.label}
+                  icon={row.icon}
+                  label={row.label}
+                  onPress={() => router.push(row.route)}
+                />
+              ))}
             </View>
           </Animated.View>
 

@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useEffect, type ComponentProps } from 'react';
+import { useEffect, type ComponentProps, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
@@ -15,6 +16,7 @@ import Animated, {
 
 import { BrandMark } from '@/components/ui/brand-mark';
 import { useAppTheme } from '@/context/theme-context';
+import { useProfile } from '@/context/profile-context';
 import { Spacing } from '@/constants/theme';
 import { usePressScale } from '@/hooks/use-press-scale';
 
@@ -39,16 +41,36 @@ function TopBarButton({
       onPress={onPress}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
-      style={[styles.iconButton, { backgroundColor: colors.iconButtonBackground }, animatedStyle]}>
+      style={[
+        styles.iconButton,
+        { backgroundColor: colors.iconButtonBackground, borderColor: colors.surfaceBorder },
+        animatedStyle,
+      ]}>
       <Ionicons name={icon} size={20} color={colors.text} />
       {showDot && <View style={[styles.dot, { borderColor: colors.background }]} />}
     </AnimatedPressable>
   );
 }
 
+function StatBadge({ icon, value }: { icon: ReactNode; value: number }) {
+  const { colors } = useAppTheme();
+
+  return (
+    <View
+      style={[
+        styles.statBadge,
+        { backgroundColor: colors.iconButtonBackground, borderColor: colors.surfaceBorder },
+      ]}>
+      {icon}
+      <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
+    </View>
+  );
+}
+
 function ProfileAvatar() {
   const router = useRouter();
   const { theme } = useAppTheme();
+  const { profile } = useProfile();
   const { animatedStyle, onPressIn, onPressOut } = usePressScale();
   const pulse = useSharedValue(0.35);
 
@@ -75,14 +97,25 @@ function ProfileAvatar() {
       accessibilityRole="button"
       accessibilityLabel="Open profile"
       style={[styles.avatarWrapper, animatedStyle]}>
-      <Animated.View style={[styles.avatarRing, ringStyle, { borderColor: theme.gradient[1] }]} />
-      <LinearGradient
-        colors={theme.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.avatarFill}>
-        <Ionicons name="person" size={16} color="#FFFFFF" />
-      </LinearGradient>
+      <Animated.View style={[styles.avatarRing, ringStyle]}>
+        <LinearGradient
+          colors={profile.ringGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.avatarRingFill}
+        />
+      </Animated.View>
+      {profile.avatarUri ? (
+        <Image source={{ uri: profile.avatarUri }} style={styles.avatarFill} contentFit="cover" />
+      ) : (
+        <LinearGradient
+          colors={theme.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.avatarFill}>
+          <Ionicons name="person" size={16} color="#FFFFFF" />
+        </LinearGradient>
+      )}
     </AnimatedPressable>
   );
 }
@@ -94,6 +127,10 @@ export type TopBarProps = {
   showProfile?: boolean;
   showBrandMark?: boolean;
   hasUnread?: boolean;
+  showStreak?: boolean;
+  streakCount?: number;
+  showCoins?: boolean;
+  coinCount?: number;
 };
 
 export function TopBar({
@@ -103,6 +140,10 @@ export function TopBar({
   showProfile = false,
   showBrandMark = false,
   hasUnread = false,
+  showStreak = false,
+  streakCount = 0,
+  showCoins = false,
+  coinCount = 0,
 }: TopBarProps) {
   const router = useRouter();
   const { colors } = useAppTheme();
@@ -131,7 +172,19 @@ export function TopBar({
           </Text>
         )}
       </View>
-      <View style={[styles.side, styles.sideRight]}>
+      <View style={styles.rightGroup}>
+        {showStreak && (
+          <StatBadge
+            icon={<Ionicons name="flame" size={16} color="#FF9F43" />}
+            value={streakCount}
+          />
+        )}
+        {showCoins && (
+          <StatBadge
+            icon={<FontAwesome5 name="coins" size={14} color="#FFC531" solid />}
+            value={coinCount}
+          />
+        )}
         {showBell && (
           <TopBarButton
             icon="notifications-outline"
@@ -156,8 +209,11 @@ const styles = StyleSheet.create({
     width: 40,
     alignItems: 'flex-start',
   },
-  sideRight: {
-    alignItems: 'flex-end',
+  rightGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: Spacing.two,
   },
   titleRow: {
     flex: 1,
@@ -174,8 +230,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  statBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    height: 40,
+    paddingHorizontal: Spacing.three,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  statValue: {
+    fontSize: 13,
+    fontWeight: '700',
   },
   dot: {
     position: 'absolute',
@@ -198,7 +268,10 @@ const styles = StyleSheet.create({
     width: RING_SIZE,
     height: RING_SIZE,
     borderRadius: RING_SIZE / 2,
-    borderWidth: 2,
+    overflow: 'hidden',
+  },
+  avatarRingFill: {
+    flex: 1,
   },
   avatarFill: {
     width: AVATAR_SIZE,

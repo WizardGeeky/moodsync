@@ -6,6 +6,8 @@ import { useColorScheme } from 'react-native';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { BottomNavBar } from '@/components/bottom-nav-bar';
 import { AppThemeProvider } from '@/context/theme-context';
+import { ConnectionsProvider } from '@/context/connections-context';
+import { ProfileProvider } from '@/context/profile-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,6 +19,9 @@ const MAIN_APP_ROUTES = [
   '/notifications',
   '/theme-picker',
   '/create-post',
+  '/edit-profile',
+  '/my-qr',
+  '/scan-connect',
 ];
 
 export default function RootLayout() {
@@ -26,23 +31,30 @@ export default function RootLayout() {
 
   return (
     <AppThemeProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AnimatedSplashOverlay />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="login" />
-          <Stack.Screen name="signup" />
-          <Stack.Screen name="home" />
-          <Stack.Screen name="posts" />
-          <Stack.Screen name="chats" />
-          <Stack.Screen name="settings" />
-          <Stack.Screen name="create-post" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="notifications" />
-          <Stack.Screen name="theme-picker" />
-        </Stack>
-        {showBottomNav && <BottomNavBar />}
-      </ThemeProvider>
+      <ProfileProvider>
+        <ConnectionsProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <AnimatedSplashOverlay />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="onboarding" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="signup" />
+              <Stack.Screen name="home" />
+              <Stack.Screen name="posts" />
+              <Stack.Screen name="chats" />
+              <Stack.Screen name="settings" />
+              <Stack.Screen name="create-post" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="notifications" />
+              <Stack.Screen name="theme-picker" />
+              <Stack.Screen name="edit-profile" />
+              <Stack.Screen name="my-qr" />
+              <Stack.Screen name="scan-connect" />
+            </Stack>
+            {showBottomNav && <BottomNavBar />}
+          </ThemeProvider>
+        </ConnectionsProvider>
+      </ProfileProvider>
     </AppThemeProvider>
   );
 }

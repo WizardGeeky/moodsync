@@ -1,4 +1,5 @@
 import type { AuroraBlobConfig } from '@/constants/brand';
+import { hexToRgba } from '@/utils/color';
 
 export type AppThemeId =
   | 'midnight'
@@ -28,31 +29,36 @@ export type ModeColors = {
   iconButtonBackground: string;
 };
 
-function darkColors(background: string): ModeColors {
+/**
+ * Both helpers tint every surface/border/bar from the theme's own accent + background hue
+ * (instead of one universal gray), so each theme reads as genuinely distinct in both modes
+ * rather than only showing up in a handful of gradient accents.
+ */
+function darkColors(background: string, accent: string): ModeColors {
   return {
     background,
-    surface: 'rgba(255,255,255,0.06)',
-    surfaceBorder: 'rgba(255,255,255,0.1)',
+    surface: hexToRgba(accent, 0.12),
+    surfaceBorder: hexToRgba(accent, 0.24),
     text: '#FFFFFF',
     textSecondary: 'rgba(255,255,255,0.65)',
     textMuted: 'rgba(255,255,255,0.48)',
-    barBackground: 'rgba(18,16,28,0.92)',
-    barBorder: 'rgba(255,255,255,0.08)',
-    iconButtonBackground: 'rgba(255,255,255,0.08)',
+    barBackground: hexToRgba(background, 0.88),
+    barBorder: hexToRgba(accent, 0.2),
+    iconButtonBackground: hexToRgba(accent, 0.22),
   };
 }
 
-function lightColors(background: string): ModeColors {
+function lightColors(background: string, accent: string): ModeColors {
   return {
     background,
-    surface: 'rgba(17,17,26,0.045)',
-    surfaceBorder: 'rgba(17,17,26,0.08)',
+    surface: hexToRgba(accent, 0.08),
+    surfaceBorder: hexToRgba(accent, 0.2),
     text: '#12121A',
     textSecondary: 'rgba(18,18,26,0.65)',
     textMuted: 'rgba(18,18,26,0.48)',
-    barBackground: 'rgba(255,255,255,0.92)',
-    barBorder: 'rgba(17,17,26,0.06)',
-    iconButtonBackground: 'rgba(17,17,26,0.05)',
+    barBackground: hexToRgba(background, 0.9),
+    barBorder: hexToRgba(accent, 0.18),
+    iconButtonBackground: hexToRgba(accent, 0.22),
   };
 }
 
@@ -84,8 +90,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#FF5F6D', '#C2255C'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#8B5CF6', '#3B82F6'],
-    dark: darkColors('#07060D'),
-    light: lightColors('#F7F5FA'),
+    dark: darkColors('#07060D', '#8B5CF6'),
+    light: lightColors('#F7F5FA', '#8B5CF6'),
   },
   {
     id: 'ocean',
@@ -102,8 +108,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#0EA5E9', '#075985'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#22D3EE', '#1D4ED8'],
-    dark: darkColors('#040B14'),
-    light: lightColors('#F1F8FC'),
+    dark: darkColors('#040B14', '#3B82F6'),
+    light: lightColors('#F1F8FC', '#3B82F6'),
   },
   {
     id: 'sunset',
@@ -120,8 +126,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#DB2777', '#831843'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#FB7185', '#DB2777'],
-    dark: darkColors('#140609'),
-    light: lightColors('#FDF4F2'),
+    dark: darkColors('#140609', '#FB7185'),
+    light: lightColors('#FDF4F2', '#FB7185'),
   },
   {
     id: 'forest',
@@ -138,8 +144,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#0D9488', '#115E59'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#22C55E', '#0D9488'],
-    dark: darkColors('#050F0A'),
-    light: lightColors('#F2FAF4'),
+    dark: darkColors('#050F0A', '#22C55E'),
+    light: lightColors('#F2FAF4', '#22C55E'),
   },
   {
     id: 'aurora',
@@ -156,8 +162,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#F472B6', '#BE185D'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#A78BFA', '#5EEAD4'],
-    dark: darkColors('#050B12'),
-    light: lightColors('#F4FBFA'),
+    dark: darkColors('#050B12', '#A78BFA'),
+    light: lightColors('#F4FBFA', '#A78BFA'),
   },
   {
     id: 'rosegold',
@@ -174,8 +180,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#F43F5E', '#9F1239'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#FCA5A5', '#F43F5E'],
-    dark: darkColors('#170D0A'),
-    light: lightColors('#FFF8F0'),
+    dark: darkColors('#170D0A', '#FCA5A5'),
+    light: lightColors('#FFF8F0', '#FCA5A5'),
   },
   {
     id: 'royal',
@@ -192,8 +198,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#4C1D95', '#2E1065'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#8B5CF6', '#4C1D95'],
-    dark: darkColors('#0B0716'),
-    light: lightColors('#F8F6FD'),
+    dark: darkColors('#0B0716', '#8B5CF6'),
+    light: lightColors('#F8F6FD', '#8B5CF6'),
   },
   {
     id: 'orchid',
@@ -210,8 +216,8 @@ export const APP_THEMES: AppThemePalette[] = [
       { colors: ['#A21CAF', '#701A75'], size: 320, top: '78%', left: '58%' },
     ],
     swatch: ['#D946EF', '#A21CAF'],
-    dark: darkColors('#140314'),
-    light: lightColors('#FDF4FD'),
+    dark: darkColors('#140314', '#D946EF'),
+    light: lightColors('#FDF4FD', '#D946EF'),
   },
 ];
 

@@ -14,7 +14,15 @@ export function HomeScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScreenGlow />
       <SafeAreaView style={styles.safeArea}>
-        <TopBar showBack={false} showProfile hasUnread={false} />
+        <TopBar
+          showBack={false}
+          showProfile
+          hasUnread={false}
+          showStreak
+          streakCount={0}
+          showCoins
+          coinCount={0}
+        />
         <View style={styles.header}>
           <Text style={[styles.greeting, { color: colors.text }]}>Welcome back 👋</Text>
           <Text style={[styles.subGreeting, { color: colors.textSecondary }]}>

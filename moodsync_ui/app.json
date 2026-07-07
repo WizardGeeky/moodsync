@@ -32,6 +32,18 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MoodSync needs access to your photos so you can set a profile picture and banner image."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MoodSync needs camera access to scan QR codes and connect with friends."
+        }
       ]
     ],
     "experiments": {

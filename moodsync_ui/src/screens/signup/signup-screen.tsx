@@ -19,6 +19,7 @@ import { BrandMark } from '@/components/ui/brand-mark';
 import { AppButton } from '@/components/ui/button';
 import { AppTextField } from '@/components/ui/text-field';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useProfile } from '@/context/profile-context';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_DIGITS_PATTERN = /^\d{7,15}$/;
@@ -33,6 +34,7 @@ type FormErrors = {
 
 export function SignupScreen() {
   const router = useRouter();
+  const { updateProfile } = useProfile();
   const [fullName, setFullName] = useState('');
   const [handle, setHandle] = useState('');
   const [email, setEmail] = useState('');
@@ -60,6 +62,12 @@ export function SignupScreen() {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
+      updateProfile({
+        fullName: fullName.trim(),
+        handle: handle.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+      });
       router.replace('/home');
     }, 900);
   }
